@@ -1,0 +1,6 @@
+@Verne.FileSystem.Api_HostAddress = http://localhost:5142
+
+GET {{Verne.FileSystem.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
