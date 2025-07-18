@@ -5,10 +5,8 @@ namespace Verne.FileSystem.Infrastructure.Persistence;
 
 public class FileSystemDbContext : DbContext
 {
-    private DbContextOptions<FileSystemDbContext> _options;
-    public FileSystemDbContext(DbContextOptions<FileSystemDbContext> options) : base()
+    public FileSystemDbContext(DbContextOptions<FileSystemDbContext> options) : base(options)
     {
-        _options = options;
     }
     public DbSet<FileSystemNode> Nodes { get; set; }
 
