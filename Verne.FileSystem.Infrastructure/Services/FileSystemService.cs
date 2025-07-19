@@ -75,4 +75,83 @@ public class FileSystemService : IFileSystemService
 
 
     }
+
+    public async Task<IEnumerable<NodeDto>> SearchInParentAsync(Guid parentId, string name)
+    {
+        var allDescendants = new List<FileSystemNode>();
+        var foldersToVisit = new Queue<Guid>();
+        
+        // We can't start with the parent itself, so we get its direct children first.
+        var directChildren = await _context.Nodes.Where(n => n.ParentId == parentId).ToListAsync();
+
+            foreach (var child in directChildren)
+        {
+            allDescendants.Add(child);
+            if (child.IsFolder)
+            {
+                foldersToVisit.Enqueue(child.Id);
+            }
+        }
+
+        while (foldersToVisit.Count > 0)
+        {
+            var currentParentId = foldersToVisit.Dequeue();
+            var grandchildren = await _context.Nodes.Where(n => n.ParentId == currentParentId).ToListAsync();
+
+            foreach (var grandchild in grandchildren)
+            {
+                allDescendants.Add(grandchild);
+                if (grandchild.IsFolder)
+                {
+                    foldersToVisit.Enqueue(grandchild.Id);
+                }
+            }
+        }
+        
+        var matchingNodes = allDescendants
+            .Where(n => n.Name == name)
+            .Select(n => new NodeDto 
+            {
+                Id = n.Id,
+                Name = n.Name,
+                IsFolder = n.IsFolder,
+                ParentId = n.ParentId
+            })
+            .ToList();
+
+        return matchingNodes;
+}
+    public async Task<IEnumerable<NodeDto>> SearchAllFilesAsync(string name)
+    {
+        var files = await _context.Nodes
+            .Where(n => n.Name == name && !n.IsFolder)
+            .Select(n => new NodeDto
+            {
+                Id = n.Id,
+                Name = n.Name,
+                IsFolder = n.IsFolder,
+                ParentId = n.ParentId
+            })
+            .ToListAsync();
+        
+        return files;
+    }
+
+    public async Task<IEnumerable<NodeDto>> SearchFilesAsync(string query)
+    {
+        var files = await _context.Nodes
+            .Where(n => !n.IsFolder && n.Name.StartsWith(query))
+            .OrderBy(n => n.Name)
+            .Take(10)
+            .Select(n => new NodeDto
+            {
+                Id = n.Id,
+                Name = n.Name,
+                IsFolder = n.IsFolder,
+                ParentId = n.ParentId
+            })
+            .ToListAsync();
+        
+        return files;
+    }
 }

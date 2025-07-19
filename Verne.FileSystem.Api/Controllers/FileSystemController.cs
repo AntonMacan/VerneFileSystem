@@ -10,10 +10,12 @@ namespace Verne.FileSystem.Api.Controllers;
 public class FileSystemController : ControllerBase
 {
     private readonly IFileSystemService _fileSystemService;
+    private readonly ILogger<FileSystemController> _logger; 
 
-    public FileSystemController(IFileSystemService fileSystemService)
+    public FileSystemController(IFileSystemService fileSystemService, ILogger<FileSystemController> logger)
     {
         _fileSystemService = fileSystemService;
+        _logger = logger;
     }
 
     [HttpPost]
@@ -49,7 +51,39 @@ public class FileSystemController : ControllerBase
     [HttpGet("{id}")]
     public IActionResult GetNodeById(Guid id)
     {
-        // Ovu logiku ćemo implementirati kasnije
         return Ok(new { Id = id, Message = "Not implemented yet" });
+    }
+
+    [HttpGet("search/parent")]
+    public async Task<IActionResult> SearchInParent([FromQuery] Guid parentId, String name)
+    {
+        if (string.IsNullOrEmpty(name))
+        {
+            return BadRequest("Name is empty");
+        }
+        var result = await _fileSystemService.SearchInParentAsync(parentId,name);
+        return Ok(result);
+    }
+
+    [HttpGet("search/all")]
+    public async Task<IActionResult> SearchAll([FromQuery] String name)
+    {
+        if (string.IsNullOrEmpty(name))
+        {
+            return BadRequest("Name is empty");
+        }
+        var result = await _fileSystemService.SearchAllFilesAsync(name);
+        return Ok(result);
+    }
+    
+    [HttpGet("search")]
+    public async Task<IActionResult> SearchFiles([FromQuery] string query)
+    {
+        if (string.IsNullOrEmpty(query))
+        {
+            return Ok(new List<NodeDto>());
+        }
+        var result = await _fileSystemService.SearchFilesAsync(query);
+        return Ok(result);
     }
 }
