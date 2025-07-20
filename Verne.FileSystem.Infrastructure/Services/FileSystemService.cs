@@ -154,4 +154,26 @@ public class FileSystemService : IFileSystemService
         
         return files;
     }
+
+    public async Task<IEnumerable<NodeDto>?> GetChildrenAsync(Guid parentId)
+    {
+        var parentsExists = await _context.Nodes.AnyAsync(n => n.ParentId == parentId && n.IsFolder);
+        if (!parentsExists)
+        {
+            return null;
+        }
+        
+        var children = await _context.Nodes
+            .Where(n => n.ParentId == parentId)
+            .Select(n => new NodeDto
+            {
+                Id = n.Id,
+                Name = n.Name,
+                IsFolder = n.IsFolder,
+                ParentId = n.ParentId
+            })
+            .ToListAsync();
+        
+        return children;
+    }
 }

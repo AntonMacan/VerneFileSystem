@@ -86,4 +86,16 @@ public class FileSystemController : ControllerBase
         var result = await _fileSystemService.SearchFilesAsync(query);
         return Ok(result);
     }
+
+    [HttpGet("{parentId}/children")]
+    public async Task<IActionResult> GetChildren(Guid parentId)
+    {
+        var children = await _fileSystemService.GetChildrenAsync(parentId);
+
+        if (children == null)
+        {
+            return NotFound("Parent not found");
+        }
+        return Ok(children);
+    }
 }

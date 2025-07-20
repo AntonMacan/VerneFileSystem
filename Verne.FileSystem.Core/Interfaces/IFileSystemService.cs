@@ -10,4 +10,5 @@ public interface IFileSystemService
     Task<IEnumerable<NodeDto>> SearchInParentAsync(Guid parentId, string name);
     Task<IEnumerable<NodeDto>> SearchAllFilesAsync(string name);
     Task<IEnumerable<NodeDto>> SearchFilesAsync(string query);
+    Task<IEnumerable<NodeDto>?> GetChildrenAsync(Guid parentId);
 }
