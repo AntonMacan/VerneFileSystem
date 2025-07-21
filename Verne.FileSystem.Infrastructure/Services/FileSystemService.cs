@@ -15,6 +15,7 @@ public class FileSystemService : IFileSystemService
         _context = context;
     }
     
+    /// <inheritdoc />
     public async Task<NodeDto> CreateNodeAsync(CreateNodeDto createNodeDto)
     {
         if (createNodeDto.ParentId.HasValue)
@@ -55,6 +56,7 @@ public class FileSystemService : IFileSystemService
         return nodeDto;
     }
 
+    /// <inheritdoc />
     public async Task<bool> DeleteNodeAsync(Guid id)
     {
         var node = await _context.Nodes.FindAsync(id);
@@ -75,13 +77,12 @@ public class FileSystemService : IFileSystemService
 
 
     }
-
+    /// <inheritdoc />
     public async Task<IEnumerable<NodeDto>> SearchInParentAsync(Guid parentId, string name)
     {
         var allDescendants = new List<FileSystemNode>();
         var foldersToVisit = new Queue<Guid>();
         
-        // We can't start with the parent itself, so we get its direct children first.
         var directChildren = await _context.Nodes.Where(n => n.ParentId == parentId).ToListAsync();
 
             foreach (var child in directChildren)
@@ -120,7 +121,8 @@ public class FileSystemService : IFileSystemService
             .ToList();
 
         return matchingNodes;
-}
+    }
+    /// <inheritdoc />
     public async Task<IEnumerable<NodeDto>> SearchAllFilesAsync(string name)
     {
         var files = await _context.Nodes
@@ -137,6 +139,7 @@ public class FileSystemService : IFileSystemService
         return files;
     }
 
+    /// <inheritdoc />
     public async Task<IEnumerable<NodeDto>> SearchFilesAsync(string query)
     {
         var files = await _context.Nodes
@@ -155,6 +158,7 @@ public class FileSystemService : IFileSystemService
         return files;
     }
 
+    /// <inheritdoc />
     public async Task<IEnumerable<NodeDto>?> GetChildrenAsync(Guid parentId)
     {
         var parentsExists = await _context.Nodes.AnyAsync(n => n.ParentId == parentId && n.IsFolder);
@@ -177,6 +181,7 @@ public class FileSystemService : IFileSystemService
         return children;
     }
 
+    /// <inheritdoc />
     public async Task<NodeDto?> GetNodeAsync(Guid id)
     {
         var node = await _context.Nodes

@@ -4,6 +4,9 @@ using Verne.FileSystem.Core.Interfaces;
 
 namespace Verne.FileSystem.Api.Controllers;
 
+/// <summary>
+/// Manages file system nodes.
+/// </summary>
 [ApiController]
 [Route("api/nodes")]
 public class FileSystemController : ControllerBase
@@ -17,6 +20,11 @@ public class FileSystemController : ControllerBase
         _logger = logger;
     }
 
+    /// <summary>
+    /// Creates a new file or folder.
+    /// </summary>
+    /// <param name="createNodeDto">The details of the node to create.</param>
+    /// <returns>The newly created node.</returns>
     [HttpPost]
     public async Task<IActionResult> CreateNode([FromBody] CreateNodeDto createNodeDto)
     {
@@ -39,6 +47,11 @@ public class FileSystemController : ControllerBase
         return CreatedAtAction(nameof(GetNodeById), new { id = createdNodeDto.Id }, createdNodeDto);
     }
 
+    /// <summary>
+    /// Deletes a node by its ID. Deleting a folder also deletes all its contents.
+    /// </summary>
+    /// <param name="id">The ID of the node to delete.</param>
+    /// <returns>A 204 No Content response on success.</returns>
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteNode(Guid id)
     {
@@ -63,6 +76,11 @@ public class FileSystemController : ControllerBase
         }
     }
     
+    /// <summary>
+    /// Retrieves a single node by its unique identifier.
+    /// </summary>
+    /// <param name="id">The ID of the node to retrieve.</param>
+    /// <returns>The requested node.</returns>
     [HttpGet("{id}")]
     public async Task<IActionResult> GetNodeById(Guid id)
     {
@@ -78,6 +96,13 @@ public class FileSystemController : ControllerBase
 
         return Ok(node);
     }
+
+    /// <summary>
+    /// Recursively searches for a file with an exact name within a specific parent folder.
+    /// </summary>
+    /// <param name="parentId">The ID of the folder to start the search in.</param>
+    /// <param name="name">The exact name of the file to find.</param>
+    /// <returns>A list of matching nodes.</returns>
     [HttpGet("search/parent")]
     public async Task<IActionResult> SearchInParent([FromQuery] Guid parentId, [FromQuery] string name)
     {
@@ -91,6 +116,11 @@ public class FileSystemController : ControllerBase
         return Ok(result);
     }
 
+    /// <summary>
+    /// Searches for all files with an exact name across the entire system.
+    /// </summary>
+    /// <param name="name">The exact name of the file to find.</param>
+    /// <returns>A list of matching files.</returns>
     [HttpGet("search/all")]
     public async Task<IActionResult> SearchAll([FromQuery] string name)
     {
@@ -104,6 +134,11 @@ public class FileSystemController : ControllerBase
         return Ok(result);
     }
     
+    /// <summary>
+    /// Gets the top 10 files that start with a given query, for autocomplete.
+    /// </summary>
+    /// <param name="query">The search query.</param>
+    /// <returns>A list of up to 10 matching files.</returns>
     [HttpGet("search")]
     public async Task<IActionResult> SearchFiles([FromQuery] string query)
     {
@@ -117,6 +152,11 @@ public class FileSystemController : ControllerBase
         return Ok(result);
     }
 
+    /// <summary>
+    /// Retrieves the direct children of a specific folder.
+    /// </summary>
+    /// <param name="parentId">The ID of the parent folder.</param>
+    /// <returns>A list of child nodes.</returns>
     [HttpGet("{parentId}/children")]
     public async Task<IActionResult> GetChildren(Guid parentId)
     {
