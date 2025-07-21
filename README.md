@@ -25,3 +25,4 @@ Press F5 or use the "Run" command in your IDE to start the Verne.FileSystem.Api 
 
 Test the API:
 A browser window will automatically open with the Swagger UI.
+For UnitTests run in the project directory: dotnet test 
