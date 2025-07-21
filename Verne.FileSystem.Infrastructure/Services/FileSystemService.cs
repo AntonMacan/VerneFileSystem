@@ -30,7 +30,7 @@ public class FileSystemService : IFileSystemService
         var node = new FileSystemNode
         {
             Name = createNodeDto.Name,
-            IsFolder = createNodeDto.isFolder,
+            IsFolder = createNodeDto.IsFolder,
             ParentId = createNodeDto.ParentId.HasValue ?  createNodeDto.ParentId.Value : null
         };
 
@@ -175,5 +175,22 @@ public class FileSystemService : IFileSystemService
             .ToListAsync();
         
         return children;
+    }
+
+    public async Task<NodeDto?> GetNodeAsync(Guid id)
+    {
+        var node = await _context.Nodes
+            .Where(n => n.Id == id)
+            .Select(n => new NodeDto
+        {
+            Id = n.Id,
+            IsFolder = n.IsFolder,
+            ParentId = n.ParentId,
+            Name = n.Name
+        }).FirstOrDefaultAsync();
+        
+        if (node == null) return null;
+        
+        return node;
     }
 }

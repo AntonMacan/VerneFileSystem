@@ -8,7 +8,7 @@ public class CreateNodeDto
     [StringLength(255)]
     public string Name { get; set; }
     
-    public bool isFolder { get; set; }
+    public bool IsFolder { get; set; }
     
     public Guid? ParentId { get; set; }
 }
